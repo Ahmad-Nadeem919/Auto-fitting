@@ -15,14 +15,14 @@ export async function generateClothedImage(
   personMimeType: string
 ): Promise<string> {
   try {
-    // A more specific prompt that clearly identifies each image's role.
-    const prompt = `The first image contains an article of clothing. The second image contains a person. Generate a new, photorealistic image of the person from the second image wearing the clothing from the first image. The background should be a plain, smooth white, with soft, natural lighting.`;
+    // A more direct prompt to clearly guide the model and avoid safety filters.
+    const prompt = `Place the clothing from the first image onto the person in the second image. Create a photorealistic image with a smooth white background and natural lighting.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
-      contents: {
+      // FIX: The 'contents' property must be an array of Content objects.
+      contents: [{
         parts: [
-          // Sending images before the prompt can improve model performance.
           {
             inlineData: {
               data: clothingBase64,
@@ -39,7 +39,7 @@ export async function generateClothedImage(
             text: prompt,
           },
         ],
-      },
+      }],
       config: {
         responseModalities: [Modality.IMAGE],
       },
