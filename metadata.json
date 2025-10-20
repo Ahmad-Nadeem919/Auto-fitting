@@ -1,0 +1,5 @@
+{
+  "name": "Cloth Match",
+  "description": "An application to virtually try on clothes. Upload a photo of a dress and a photo of a person, and the AI will generate an image of the person wearing the dress with a clean background and natural lighting.",
+  "requestFramePermissions": []
+}
