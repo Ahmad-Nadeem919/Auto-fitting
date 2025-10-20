@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Modality } from "@google/genai";
 
 const API_KEY = process.env.API_KEY;
@@ -10,22 +9,24 @@ if (!API_KEY) {
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 export async function generateClothedImage(
-  dressBase64: string,
-  dressMimeType: string,
+  clothingBase64: string,
+  clothingMimeType: string,
   personBase64: string,
   personMimeType: string
 ): Promise<string> {
   try {
-    const prompt = `You are a skilled photo editor. Using the first image of a dress and the second image of a person, generate a new, photorealistic image where the person is wearing the dress. The final image should have soft, natural lighting and a smooth, plain white background. The final image should only contain the person wearing the dress.`;
+    // A more specific prompt that clearly identifies each image's role.
+    const prompt = `The first image contains an article of clothing. The second image contains a person. Generate a new, photorealistic image of the person from the second image wearing the clothing from the first image. The background should be a plain, smooth white, with soft, natural lighting.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
       contents: {
         parts: [
+          // Sending images before the prompt can improve model performance.
           {
             inlineData: {
-              data: dressBase64,
-              mimeType: dressMimeType,
+              data: clothingBase64,
+              mimeType: clothingMimeType,
             },
           },
           {

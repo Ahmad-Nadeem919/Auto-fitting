@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { generateClothedImage } from './services/geminiService';
 
@@ -93,17 +92,17 @@ interface ImageState {
 const initialImageState: ImageState = { base64: null, mimeType: null, previewUrl: null };
 
 export default function App() {
-  const [dressImage, setDressImage] = useState<ImageState>(initialImageState);
+  const [clothingImage, setClothingImage] = useState<ImageState>(initialImageState);
   const [personImage, setPersonImage] = useState<ImageState>(initialImageState);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleImageUpload = useCallback(async (file: File, type: 'dress' | 'person') => {
+  const handleImageUpload = useCallback(async (file: File, type: 'clothing' | 'person') => {
     try {
       const { previewUrl, base64, mimeType } = await fileToUrlAndBase64(file);
-      if (type === 'dress') {
-        setDressImage({ previewUrl, base64, mimeType });
+      if (type === 'clothing') {
+        setClothingImage({ previewUrl, base64, mimeType });
       } else {
         setPersonImage({ previewUrl, base64, mimeType });
       }
@@ -114,8 +113,8 @@ export default function App() {
   }, []);
 
   const handleGenerateClick = async () => {
-    if (!dressImage.base64 || !personImage.base64 || !dressImage.mimeType || !personImage.mimeType) {
-      setError("Please upload both a dress and a person image.");
+    if (!clothingImage.base64 || !personImage.base64 || !clothingImage.mimeType || !personImage.mimeType) {
+      setError("Please upload both a clothing and a person image.");
       return;
     }
     
@@ -125,8 +124,8 @@ export default function App() {
 
     try {
       const resultBase64 = await generateClothedImage(
-        dressImage.base64,
-        dressImage.mimeType,
+        clothingImage.base64,
+        clothingImage.mimeType,
         personImage.base64,
         personImage.mimeType
       );
@@ -139,7 +138,7 @@ export default function App() {
     }
   };
 
-  const canGenerate = dressImage.base64 !== null && personImage.base64 !== null;
+  const canGenerate = clothingImage.base64 !== null && personImage.base64 !== null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 font-sans">
@@ -149,17 +148,17 @@ export default function App() {
             Cloth Match
           </h1>
           <p className="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
-            Virtually try on any outfit. Upload a photo of a dress and a person to see the magic happen.
+            Virtually try on any outfit. Upload a photo of clothing and a person to see the magic happen.
           </p>
         </header>
 
         <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 <ImageUploader
-                    id="dress-upload"
-                    title="1. Upload Dress"
-                    onImageUpload={(file) => handleImageUpload(file, 'dress')}
-                    previewUrl={dressImage.previewUrl}
+                    id="clothing-upload"
+                    title="1. Upload Clothing"
+                    onImageUpload={(file) => handleImageUpload(file, 'clothing')}
+                    previewUrl={clothingImage.previewUrl}
                     icon={
                         <svg className="w-8 h-8 mb-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
                     }
