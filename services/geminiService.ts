@@ -1,12 +1,15 @@
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
+const API_KEY: string = (import.meta.env.VITE_GEMINI_API_KEY as string | undefined) ?? "";
 
-if (!API_KEY) {
-  throw new Error("API_KEY environment variable is not set.");
+function getAi(): GoogleGenAI {
+  if (!API_KEY) {
+    throw new Error(
+      "Gemini API key is not set. Create a .env.local file in the project root with VITE_GEMINI_API_KEY=<your key>, then restart the dev server."
+    );
+  }
+  return new GoogleGenAI({ apiKey: API_KEY });
 }
-
-const ai = new GoogleGenAI({ apiKey: API_KEY });
 
 export async function generateClothedImage(
   clothingBase64: string,
@@ -18,7 +21,7 @@ export async function generateClothedImage(
     // A more direct prompt to clearly guide the model and avoid safety filters.
     const prompt = `Place the clothing from the first image onto the person in the second image. Create a photorealistic image with a smooth white background and natural lighting.`;
 
-    const response = await ai.models.generateContent({
+    const response = await getAi().models.generateContent({
       model: 'gemini-2.5-flash-image',
       // FIX: The 'contents' property must be an array of Content objects.
       contents: [{
